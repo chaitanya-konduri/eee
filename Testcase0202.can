@@ -1,0 +1,55 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+  #include "diag.cin"
+}
+
+variables
+{
+  const int Resplength_ExtendedSession = 07;
+  byte RespExtendedSession[Resplength_ExtendedSession] = {6,0x50,3,0,0x32,1,0xF4};
+  const int Resplength_TesterPresent = 03;
+  byte RespTesterPresent[Resplength_TesterPresent] = {2,0x7E,0};
+}
+
+
+testcase ON_DEMAND_SELF_TEST()
+{
+  testCaseTitle("","ON DEMAND SELF TEST RID $0202");
+  testCaseDescription("Verify ODST $0202 and verify Faults");
+  testStep("STEP-01","SET EXTENDED SESSION");
+  DiagnosticSessionControl(EXTENDED_SESSION);  
+  testWaitForTimeout(500);
+  testStep("","VERIFY POSITIVE RESPONSE");
+  for(i=0;i<Resplength_ExtendedSession;i++){
+    if(RespExtendedSession[i]==ResponseData[i]){
+      testStepPass("","EXPECTED[%d] = %X & RESPONSE[%d] = %X",i,RespExtendedSession[i],i,ResponseData[i]);
+    }
+    else{
+      testStepFail("","EXPECTED[%d] = %X & RESPONSE[%d] = %X",i,RespExtendedSession[i],i,ResponseData[i]);
+    }
+  }
+  for(i=0;i<50;i++){
+    ResponseData[i] = 0;
+  }
+  testStep("STEP-02","TESTER PRESENT ENABLE");
+  setTimer(periodicTimer,500);
+  testWaitForTimeout(5000);
+  testStep("","VERIFY POSITIVE RESPONSE");
+  for(i=0;i<Resplength_TesterPresent;i++){
+    if(RespTesterPresent[i]==ResponseData[i]){
+      testStepPass("","EXPECTED[%d] = %X & RESPONSE[%d] = %X",i,RespTesterPresent[i],i,ResponseData[i]);
+    }
+    else{
+      testStepFail("","EXPECTED[%d] = %X & RESPONSE[%d] = %X",i,RespTesterPresent[i],i,ResponseData[i]);
+    }
+  }
+  
+}
+
+void MainTest ()
+{
+  ON_DEMAND_SELF_TEST();
+}
+

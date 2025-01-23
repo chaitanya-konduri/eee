@@ -1,0 +1,57 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  message aaaMsg Msg_1AA;
+  msTimer PeriodicTimer;
+  int LED_ON_OFF=0;
+}
+
+on start{
+  setTimer(PeriodicTimer,1000);
+}
+
+on timer PeriodicTimer{
+  setTimer(PeriodicTimer,5000);
+  if(LED_ON_OFF>1){
+    LED_ON_OFF = 0;
+  }
+  Msg_1AA.can = 1;
+  Msg_1AA.dlc = 1;
+  
+  if(@SwitchInterface::Switch_1A==1){
+    if(LED_ON_OFF == 1){
+    @SwitchInterface::Led1 = 1;
+    @SwitchInterface::Led2 = 0;
+      Msg_1AA.byte(0) = @SwitchInterface::Led1;
+      output(Msg_1AA);
+    }
+    else{
+      @SwitchInterface::Led1 = 0;
+    @SwitchInterface::Led2 = 1;
+      Msg_1AA.byte(0) = @SwitchInterface::Led1;
+      output(Msg_1AA);
+    }
+  }
+  LED_ON_OFF = LED_ON_OFF + 1;
+}
+
+on sysvar SwitchInterface::Switch_1A{
+  Msg_1AA.can = 1;
+  Msg_1AA.dlc = 1;
+  Msg_1AA.byte(0) = @SwitchInterface::Switch_1A;
+  if(@SwitchInterface::Switch_1A==1){
+    @SwitchInterface::Led1 = 1;
+    @SwitchInterface::Led2 = 1;
+  }
+  else{
+    @SwitchInterface::Led1 = 0;
+    @SwitchInterface::Led2 = 0;
+  }
+  output(Msg_1AA);
+  
+}

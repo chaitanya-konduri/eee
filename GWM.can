@@ -1,0 +1,24 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  message EngVehicleSpdThrottle EngVehicleSpdThrottle;
+  msTimer PeriodicTimer;
+  long ptime = 1000;
+}
+
+on start{
+  setTimer(PeriodicTimer,500);
+}
+
+on timer PeriodicTimer{
+  setTimer(PeriodicTimer,ptime);
+  EngVehicleSpdThrottle.can = 1;
+  EngVehicleSpdThrottle.dlc = 1;
+  EngVehicleSpdThrottle.byte(0) = @envVehicleSpeed;
+  output(EngVehicleSpdThrottle);
+}

@@ -1,0 +1,68 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: GWM ADAS IPC
+VAL_TABLE_ vt_RadarDetectionStatus 3 "RadarFaulty" 2 "RadarBlockage" 1 "ObjectDetected" 0 "Not_Detected" ;
+VAL_TABLE_ vt_warningInfo 1 "WARNING_ON" 0 "WARNING_OFF" ;
+
+
+BO_ 32 RadarDetection: 1 ADAS
+ SG_ RearRadarRight : 2|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ RearRadarLeft : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 16 Telltale_Warnings: 1 IPC
+ SG_ WarningIndicator : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 89 EngVehicleSpdThrottle: 1 GWM
+ SG_ VehicleSpeed : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+
+
+
+EV_ envWarningIndicator: 0 [0|1] "" 0 1 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ envVehicleSpeed: 0 [0|255] "" 0 2 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ envRearRadarRight: 0 [0|3] "" 0 3 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ envRearRadarLeft: 0 [0|3] "" 0 4 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "";
+VAL_ 32 RearRadarRight 3 "RadarFaulty" 2 "RadarBlockage" 1 "ObjectDetected" 0 "Not_Detected" ;
+VAL_ 32 RearRadarLeft 3 "RadarFaulty" 2 "RadarBlockage" 1 "ObjectDetected" 0 "Not_Detected" ;
+VAL_ 16 WarningIndicator 1 "WARNING_ON" 0 "WARNING_OFF" ;
+VAL_ envRearRadarRight 3 "RadarFaulty" 2 "RadarBlockage" 1 "ObjectDetected" 0 "Not_Detected" ;
+VAL_ envRearRadarLeft 3 "RadarFaulty" 2 "RadarBlockage" 1 "ObjectDetected" 0 "Not_Detected" ;
+

@@ -1,0 +1,36 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  message Telltale_Warnings Telltale_Warnings;
+  msTimer PeriodicTimer;
+  long ptime = 1000;
+  enum WARNING_INDICATIONS_t{
+    WARNING_OFF=0,
+    WARNING_ON
+  };
+  enum WARNING_INDICATIONS_t WARNING_INDICATIONS;
+}
+
+on start{
+  setTimer(PeriodicTimer,500);
+}
+
+on timer PeriodicTimer{
+  setTimer(PeriodicTimer,ptime);
+  Telltale_Warnings.can = 1;
+  Telltale_Warnings.dlc = 1;
+  if((@envVehicleSpeed>20)&&(@envRearRadarLeft == 1 || @envRearRadarRight==1)){
+    @envWarningIndicator = WARNING_ON;    
+  }
+  else{
+    @envWarningIndicator = WARNING_OFF;
+  }
+  $IPC::Telltale_Warnings::WarningIndicator = @envWarningIndicator;
+  output(Telltale_Warnings);
+}
+

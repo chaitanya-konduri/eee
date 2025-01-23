@@ -1,0 +1,9 @@
+/*@!Encoding:1252*/
+
+variables
+{
+  message 0x6F0 sampleMsg;
+  msTimer milliSecTimer;
+}
+
+
