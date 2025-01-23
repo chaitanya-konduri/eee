@@ -1,0 +1,42 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+testcase BLIS_Valid_Scenario()
+{
+  testCaseTitle("TC_4158","BLIS VALID FUNCTIONALITY TEST");
+  testCaseDescription(" Verifying the BLIS Functionality with Positive Scenarios.");
+  testStep("","ModuleFeatureCfg_BLIS = Enable");
+  /////
+  testStep("Step-01","Sod_D_req = ON");
+  /*Message Name            :: Signal Name  = Signal Value*/
+  $ParkAid_Aud_Warn_CmdM_FD1::Sod_D_Rq = 2;
+  testStep("","ParkAid_Aud_Warn_CmdM_FD1::Sod_D_Rq = %d",$ParkAid_Aud_Warn_CmdM_FD1::Sod_D_Rq);
+  testWaitForTimeout(1000);// Add de;ay after setting CAN signals.
+  TestStep("Step-02","verify output signal of ADAS,");
+  if($Side_Detect_L_Stat::SodLeft_D_Stat == 2){
+    testcasecomment("Expected Value is matching with Observed Value");
+    testStepPass("","SodLeft_D_Stat = ON");
+  }
+  else{
+    testcasecomment("Expected Value is not matching with Observed Value");
+    testStepFail("","SodLeft_D_Stat = %d",$Side_Detect_L_Stat::SodLeft_D_Stat);
+  }
+  testStep("Step-03","Gear Position = Drive(3)");
+  /*Message Name            :: Signal Name  = Signal Value*/
+  $TransGearData::GearLvrPos_D_Actl = 3;
+  testStep("","TransGearData::GearLvrPos_D_Actl = %d",$TransGearData::GearLvrPos_D_Actl);
+Step-04: Vehicle Speed >=12 Kmph & <80 Kmph
+Step-05: Play the Object detection scenario by using vehicle log file.
+Step-06: Verify output signal of ADAS,
+SodAlrts_Left_D_Stat = OFF
+SodAlrts_Right_D_Stat = OFF
+}
+

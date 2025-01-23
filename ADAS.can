@@ -1,0 +1,128 @@
+/*@!Encoding:1252*/
+includes
+{  
+  #include "multiFunc.cin"
+}
+
+variables
+{
+  message 0x706 physicalReq;
+  message 0x70E physicalResp;
+  msTimer timer1;
+  int Flag=0;
+  int NegRespFlag=0;
+  int i = 0;
+  byte SID;
+}
+on start{
+  setTimer(timer1,1000);
+}
+
+on timer timer1{
+   setTimer(timer1,50);
+   physicalResp.can = 1;
+   physicalResp.dlc = 8;
+   switch(Flag){
+    case 1: physicalResp.byte(0) = 02;
+            physicalResp.byte(1) = 0x7E;
+            for(i=2;i<8;i++){
+            physicalResp.byte(i) = 00;
+            }
+            output(physicalResp); 
+            Flag = 0;
+            break;
+    case 2: physicalResp.byte(0) = 06;
+            physicalResp.byte(1) = 0x50;
+            physicalResp.byte(2) = 0x1;
+            physicalResp.byte(3) = 0x00;
+            physicalResp.byte(4) = 0x32;
+            physicalResp.byte(5) = 0x1;
+            physicalResp.byte(6) = 0xF4;            
+            output(physicalResp); 
+            Flag = 0;
+            break;
+    case 3: physicalResp.byte(0) = 06;
+            physicalResp.byte(1) = 0x50;
+            physicalResp.byte(2) = 0x2;
+            physicalResp.byte(3) = 0x00;
+            physicalResp.byte(4) = 0x19;
+            physicalResp.byte(5) = 0x1;
+            physicalResp.byte(6) = 0xF4;            
+            output(physicalResp); 
+            Flag = 0;
+            break;
+    case 4: physicalResp.byte(0) = 06;
+            physicalResp.byte(1) = 0x50;
+            physicalResp.byte(2) = 0x3;
+            physicalResp.byte(3) = 0x00;
+            physicalResp.byte(4) = 0x32;
+            physicalResp.byte(5) = 0x1;
+            physicalResp.byte(6) = 0xF4;            
+            output(physicalResp); 
+            Flag = 0;
+            break;
+  }
+  switch(NegRespFlag){
+    case 0x13 : physicalResp.byte(0) = 03;
+                physicalResp.byte(1) = 0x7F;
+                physicalResp.byte(2) = SID;
+                physicalResp.byte(3) = NegRespFlag;                
+                for(i=4;i<8;i++){
+                  physicalResp.byte(i) = 0;
+                }
+                output(physicalResp); 
+                NegRespFlag = 0;SID = 0;
+                break;
+    case 0x12 : physicalResp.byte(0) = 03;
+                physicalResp.byte(1) = 0x7F;
+                physicalResp.byte(2) = SID;
+                physicalResp.byte(3) = NegRespFlag;                
+                for(i=4;i<8;i++){
+                  physicalResp.byte(i) = 0;
+                }
+                output(physicalResp); 
+                NegRespFlag = 0;SID = 0;
+                break;
+  }
+  
+}
+
+on message 0x706{
+  if(this.byte(0)==2){
+  switch(this.byte(1)){
+    case 0x3E: 
+                if(this.byte(2)>0){
+                    NegRespFlag = 0x12;
+                    SID = this.byte(1);
+                  Flag = 0;
+                  }
+                else{
+                  Flag = 1;
+                }
+                break;
+    case 0x10:  
+                switch(this.byte(2)){
+                case 1: Flag = 2;
+                break;
+                case 2: Flag = 3;
+                break;
+                case 3: Flag = 4;
+                break;                    
+                }
+                if(this.byte(2)>3){
+                    NegRespFlag = 0x12;
+                    SID = this.byte(1);
+                  }
+                 break;
+                }
+                }
+  else{
+    switch(this.byte(1)){
+    case 0x3E: 
+    case 0x10:SID = this.byte(1);
+              NegRespFlag = 0x13;
+              break;
+  }
+    
+  }
+}

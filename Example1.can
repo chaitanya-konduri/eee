@@ -1,0 +1,39 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+  
+}
+
+variables
+{
+  message 0x500 EventMsg;
+  message 0x706 PhysicalReq;
+  msTimer millisecsTimer;
+}
+
+/*Event message Transmission*/
+on start{
+  
+  setTimer(millisecsTimer,1000);
+}
+
+on key 'p'{
+  
+  EventMsg.can = 1;
+  EventMsg.dlc = 1;
+  EventMsg.byte(0) = 0x20;
+  output(EventMsg);
+}
+
+/*Periodic Transmission*/
+
+on timer millisecsTimer{
+  setTimer(millisecsTimer,5000);
+  PhysicalReq.can = 1;
+  PhysicalReq.dlc = 8;
+  PhysicalReq.byte(0) = 2;
+  PhysicalReq.byte(1) = 0x3E;
+  PhysicalReq.byte(2) = 0;
+  output(PhysicalReq);
+}

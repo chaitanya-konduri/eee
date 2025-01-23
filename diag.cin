@@ -1,0 +1,105 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  message 0x706 physicalReq;
+  message 0x70E physicalResp;
+  enum diagSessionType_t{
+    DEFAULT_SESSION = 1,
+    PROGRAMMING_SESSION,
+    EXTENDED_SESSION
+  }diagSessionType;
+  //enum diagSessionType_t diagSessionType;
+  msTimer periodicTimer;
+  timer Timer_in_secs;
+  enum RoutineControlSubFunctn_t{
+    START_ROUTINE = 1,
+    STOP_ROUTINE,
+    REQUEST_ROUTINE_RESULT
+  }RoutineControlSubFunctn;
+  byte ResponseData[50];
+  byte TesterPresentFlag=1;
+  int i=0;
+}
+
+/*Event Msg*/
+
+void DiagnosticSessionControl(enum diagSessionType_t diagSessionType){
+  for(i=0;i<50;i++){
+    ResponseData[i] = 0;
+  }
+  physicalReq.can = 1;
+  physicalReq.dlc = 8;
+  physicalReq.byte(0) = 2;
+  physicalReq.byte(1) = 0x10;
+  physicalReq.byte(2) = diagSessionType;
+  output(physicalReq);
+  testStep("","Request -> [%X] %X %X",physicalReq.byte(0),physicalReq.byte(1),physicalReq.byte(2));
+}
+
+//on start{
+//  setTimer(periodicTimer,500);// Initialize after 500ms
+//  setTimer(Timer_in_secs,1);//Initialize after 1 second
+//}
+/*Periodic*/
+void TesterPresent(){  
+  for(i=0;i<50;i++){
+    ResponseData[i] = 0;
+  }
+   physicalReq.can = 1;
+  physicalReq.dlc = 8;
+  physicalReq.byte(0) = 2;
+  physicalReq.byte(1) = 0x3E;
+  physicalReq.byte(2) = 0;
+  output(physicalReq);
+  testStep("","Request -> [%X] %X %X",physicalReq.byte(0),physicalReq.byte(1),physicalReq.byte(2));
+  
+}
+on timer periodicTimer{
+  
+  //DiagnosticSessionControl(EXTENDED_SESSION);
+  TesterPresent();
+  setTimer(periodicTimer,4990);//Transmit for every 4.99 secs
+}
+
+void RoutineControl(byte RequestLength,enum RoutineControlSubFunctn_t RoutineControlSubFunctn,word RoutineIdentifier){
+  byte HighByte = 0;
+  byte LowByte = 0;
+  HighByte = RoutineIdentifier>>8 ;
+  LowByte = RoutineIdentifier & 0x00FF;
+   physicalReq.can = 1;
+  physicalReq.dlc = 8;
+  physicalReq.byte(0) = RequestLength;
+  physicalReq.byte(1) = 0x31;
+  physicalReq.byte(2) = RoutineControlSubFunctn;
+  physicalReq.byte(3) = HighByte;
+  physicalReq.byte(4) = LowByte;
+  output(physicalReq);  
+}
+
+on message 0x70E{
+  switch(this.byte(1)){
+    case 0x50:  if(this.byte(2)==3){
+                  for(i=0;i<=this.byte(0);i++)
+                    ResponseData[i] = this.byte(i);
+                  }
+                break;
+    case 0x7E:  if(TesterPresentFlag==1){
+                for(i=0;i<=this.byte(0);i++){      
+                    ResponseData[i] = this.byte(i);
+                }
+                TesterPresentFlag = 0;
+                }
+                break;
+  }
+}
+
+
+
+
+
+

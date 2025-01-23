@@ -1,0 +1,85 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+  #include "multiFunc.cin"
+}
+
+variables
+{
+  int counter = 1;
+  int verifyCounter = 0;
+  message 0x6F0 sampleMsg;
+  msTimer milliSecTimer;
+}
+
+/*Event Msg Transmission*/
+
+//on start{
+//sampleMsg.can = 1;
+//sampleMsg.dlc = 1;
+//output(sampleMsg);
+//}
+//
+//on key 'r'{
+//sampleMsg.can = 1;
+//sampleMsg.dlc = 1;
+//sampleMsg.byte(0) = counter;
+//output(sampleMsg);
+//counter++;
+//}
+
+/*Periodic msg Transmission*/
+on start{
+setTimer(milliSecTimer,500); // initialize milliSecTimer after 500ms of CANoe measurement start.
+sampleMsg.can = 1;//Optional
+sampleMsg.dlc = 1;//Optional
+output(sampleMsg);//Optional
+}
+
+on timer milliSecTimer{
+setTimer(milliSecTimer,500);
+sampleMsg.can = 1;
+sampleMsg.dlc = 1;
+sampleMsg.byte(0) = counter;
+output(sampleMsg);
+if(FindSpecificBit_Set_r_Not(counter,3) == 1){
+write("Bit Position 3 is SET");
+}
+else{
+write("Bit Position 3 is NOT-SET");
+}
+if(verifyCounter == (counter-1)){
+//write("PASS & Counter Value = %d",counter);
+}
+else{
+//write("FAIL & Missing Counter value:%d, Counter Value = %d",verifyCounter,counter);
+}
+verifyCounter = counter;
+if(counter>=25){
+counter = 0;
+verifyCounter = 0;
+}
+counter++;
+}
+
+/*Find a bit is Set or not*/
+
+/*question: Please write a program for finding a bitPosition is Set or not*/
+//Any
+//byte(0)
+//byte(1)
+//byte(2)
+//byte(3)
+//byte(4)
+//
+//Any bitPosn - 0,1,2....7
+
+int FindSpecificBit_Set_r_Not(byte anyByteField, int anyBitPosn){
+if(anyByteField & (1<<anyBitPosn)){
+	return 1;
+}
+else{
+return 0;
+}
+}
